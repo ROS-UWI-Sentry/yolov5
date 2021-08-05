@@ -15,9 +15,14 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 import roslibpy
 
+talker = 0
+client = 0
+
 @torch.no_grad()
 def detect(opt):
 #starting the ROS talker here
+    global talker, client
+
     client = roslibpy.Ros(host='localhost', port=9090)
     client.run()
     talker = roslibpy.Topic(client,'/chatter', 'std_msgs/Bool')
@@ -170,6 +175,7 @@ def detect(opt):
 
 if __name__ == '__main__':
     try:
+        while True:
             parser = argparse.ArgumentParser()
             parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
             parser.add_argument('--source', type=str, default='data/images', help='source')  # file/folder, 0 for webcam
@@ -207,3 +213,4 @@ if __name__ == '__main__':
         print("Exiting detector now")
         talker.unadvertise() #so that if it is suddenly closed the port is correctly closed
         client.terminate()
+        

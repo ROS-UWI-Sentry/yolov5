@@ -1,0 +1,3 @@
+crw-rw----+ 1 root video 81, 3 Aug  5 14:59 /dev/video3
+crw-rw----+ 1 root video 81, 2 Aug  5 14:59 /dev/video2
+crw-rw----+ 1 root video 81, 0 Aug  5 15:03 /dev/video0
