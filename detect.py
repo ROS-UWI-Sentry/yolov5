@@ -23,6 +23,7 @@ def detect(opt):
 #starting the ROS talker here
     global talker, client
 
+
     client = roslibpy.Ros(host='localhost', port=9090)
     client.run()
     talker = roslibpy.Topic(client,'/chatter', 'std_msgs/Bool')
@@ -32,6 +33,8 @@ def detect(opt):
     save_img = not opt.nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
+
+    
 #edited to not create folders
     # Directories
     save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok)  # increment run
@@ -69,6 +72,22 @@ def detect(opt):
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
+
+
+    #have to find out how many cameras, don't know how to do this in the detect.py file other than this:
+
+    with open("streams.txt",'r') as f:
+        tempFile=f.readlines()
+        
+
+    #initiaize debouncing variables
+    cameraCount= len(tempFile)
+    
+    webcamDebounceFrames = 20 #default value, should be settable
+
+    webcamDebounce = [[] for _ in range(cameraCount)]
+
+
     for path, img, im0s, vid_cap in dataset:
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -89,6 +108,8 @@ def detect(opt):
         if classify:
             pred = apply_classifier(pred, modelc, img, im0s)
 
+
+
         # Process detections
         for i, det in enumerate(pred):  # detections per image
             if webcam:  # batch_size >= 1
@@ -102,15 +123,23 @@ def detect(opt):
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if opt.save_crop else im0  # for opt.save_crop
-#publishing to the topic            
+
+
+            #determining if a human is in the frame or not          
             if (len(det) == 0) :
                 human_detected = "False"
-                talker.publish(roslibpy.Message({'data': False})) 
+                
+
+            #    talker.publish(roslibpy.Message({'data': False})) 
+                
             else:
                 for c in det[:, -1].unique():
                     if (names[int(c)]=="person") :
                         human_detected = "True"
-                        talker.publish(roslibpy.Message({'data': True}))
+            #            talker.publish(roslibpy.Message({'data': True}))
+            
+
+
 
             if len(det):
                 # Rescale boxes from img_size to im0 size
@@ -162,6 +191,26 @@ def detect(opt):
                             save_path += '.mp4'
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
+
+
+
+            print(webcamDebounce)
+            #adding the last value found
+            webcamDebounce[i].append(human_detected)
+            print(webcamDebounce[i])    
+            #publishing to the topic
+            if len(webcamDebounce[i])==webcamDebounceFrames:
+                if webcamDebounce[i].count("False")>0:
+                    talker.publish(roslibpy.Message({'data': False}))
+                elif webcamDebounce[i].count("False")==0:
+                    talker.publish(roslibpy.Message({'data': True}))
+                webcamDebounce[i].clear()
+ 
+
+
+
+
+
 
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
