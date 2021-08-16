@@ -29,7 +29,7 @@ def detect(opt):
     talker = roslibpy.Topic(client,'/chatter', 'std_msgs/Bool')
 
 
-    source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
+    webcamDebounceFrames, source, weights, view_img, save_txt, imgsz = opt.webcamDebounceFrames, opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     save_img = not opt.nosave and not source.endswith('.txt')  # save inference images
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
@@ -83,7 +83,7 @@ def detect(opt):
     #initiaize debouncing variables
     cameraCount= len(tempFile)
     
-    webcamDebounceFrames = 20 #default value, should be settable
+    #webcamDebounceFrames = 20 #default value, should be settable
 
     webcamDebounce = [[] for _ in range(cameraCount)]
 
@@ -192,19 +192,27 @@ def detect(opt):
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
 
-
-
-            print(webcamDebounce)
-            #adding the last value found
-            webcamDebounce[i].append(human_detected)
-            print(webcamDebounce[i])    
-            #publishing to the topic
-            if len(webcamDebounce[i])==webcamDebounceFrames:
-                if webcamDebounce[i].count("False")>0:
+            #if no debouncing is wanted:
+            if webcamDebounceFrames==0:
+                if human_detected=="False":
                     talker.publish(roslibpy.Message({'data': False}))
-                elif webcamDebounce[i].count("False")==0:
+                elif human_detected=="True":
                     talker.publish(roslibpy.Message({'data': True}))
-                webcamDebounce[i].clear()
+            elif webcamDebounceFrames>0:
+                #print(webcamDebounce)
+                #adding the last value found
+                webcamDebounce[i].append(human_detected)
+                #print(webcamDebounce[i])    
+                #publishing to the topic
+                if len(webcamDebounce[i])==webcamDebounceFrames:
+                    if webcamDebounce[i].count("False")>0:
+                        talker.publish(roslibpy.Message({'data': False}))
+                    elif webcamDebounce[i].count("False")==0:
+                        talker.publish(roslibpy.Message({'data': True}))
+                    webcamDebounce[i].clear()
+                 
+
+
  
 
 
@@ -226,6 +234,7 @@ if __name__ == '__main__':
     try:
         while True:
             parser = argparse.ArgumentParser()
+            parser.add_argument('--webcamDebounceFrames', type=int, default=0, help='zero for no debouncing, input integer for how many frames to debounce for')
             parser.add_argument('--weights', nargs='+', type=str, default='yolov5s.pt', help='model.pt path(s)')
             parser.add_argument('--source', type=str, default='data/images', help='source')  # file/folder, 0 for webcam
             parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
