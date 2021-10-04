@@ -26,7 +26,7 @@ def detect(opt):
 
     client = roslibpy.Ros(host='localhost', port=9090)
     client.run()
-    talker = roslibpy.Topic(client,'/chatter', 'std_msgs/Bool')
+    talker = roslibpy.Topic(client,'/sentry_control_topic', 'std_msgs/String')
 
 
     webcamDebounceFrames, source, weights, view_img, save_txt, imgsz = opt.webcamDebounceFrames, opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -86,7 +86,7 @@ def detect(opt):
     #webcamDebounceFrames = 20 #default value, should be settable
 
     webcamDebounce = [[] for _ in range(cameraCount)]
-
+    average = []
 
     for path, img, im0s, vid_cap in dataset:
         img = torch.from_numpy(img).to(device)
@@ -192,27 +192,64 @@ def detect(opt):
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer.write(im0)
 
+
+ #the following blocks checks the values (debounced or not) from the webcams and "combines them",
+ #rather than sending three signals each, if at least one is true it sends true, else false
+ #example: webcam1:person detected
+ #         webcam2:person detected
+ #         webcam3:person detected
+ # instead of publishing 3 values we check the values
+ # and only publish 1 since this means a person was seen in the room
+
+
             #if no debouncing is wanted:
             if webcamDebounceFrames==0:
+                
                 if human_detected=="False":
-                    talker.publish(roslibpy.Message({'data': False}))
+                    average.append("False")   
                 elif human_detected=="True":
-                    talker.publish(roslibpy.Message({'data': True}))
+                    average.append("True")
+
+                if i == cameraCount-1:
+                    if average.count("True") > 0:
+                        talker.publish(roslibpy.Message({'data': "human_detected_true"}))
+                    elif average.count("True") == 0:
+                        talker.publish(roslibpy.Message({'data': "human_detected_false"}))
+                    average.clear()
+
+            #for debouncing, set this value in bash launch script
             elif webcamDebounceFrames>0:
-                #print(webcamDebounce)
+                
                 #adding the last value found
                 webcamDebounce[i].append(human_detected)
-                #print(webcamDebounce[i])    
-                #publishing to the topic
-                if len(webcamDebounce[i])==webcamDebounceFrames:
-                    if webcamDebounce[i].count("False")>0:
-                        talker.publish(roslibpy.Message({'data': False}))
-                    elif webcamDebounce[i].count("False")==0:
-                        talker.publish(roslibpy.Message({'data': True}))
-                    webcamDebounce[i].clear()
                  
-
-
+                #when the amount of frames processed has reached the amount set in the script
+                if len(webcamDebounce[i])==webcamDebounceFrames:
+                    if webcamDebounce[i].count("False")>0: #any false values in stored values so far? if yes append false to list 
+                        average.append("False")
+                    elif webcamDebounce[i].count("False")==0: #if not false then it must be true, append true to list
+                        average.append("True")
+                    webcamDebounce[i].clear()
+                    if i == cameraCount-1: #when it reaches the last frame of the last camera check if any are true
+                        #publishing to the topic
+                        if average.count("True") > 0:
+                            talker.publish(roslibpy.Message({'data': "human_detected_true"}))
+                        elif average.count("True") == 0:
+                            talker.publish(roslibpy.Message({'data': "human_detected_false"}))
+                        average.clear()
+            #debouncing code without the combining of results     
+            # elif webcamDebounceFrames>0:
+            #     #print(webcamDebounce)
+            #     #adding the last value found
+            #     webcamDebounce[i].append(human_detected)
+            #     #print(webcamDebounce[i])    
+            #     #publishing to the topic
+            #     if len(webcamDebounce[i])==webcamDebounceFrames:
+            #         if webcamDebounce[i].count("False")>0:
+            #             talker.publish(roslibpy.Message({'data': False}))
+            #         elif webcamDebounce[i].count("False")==0:
+            #             talker.publish(roslibpy.Message({'data': True}))
+            #         webcamDebounce[i].clear() 
  
 
 
