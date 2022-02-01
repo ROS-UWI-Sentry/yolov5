@@ -1,9 +1,9 @@
-### UWI-Sentry YOLOv5 Modified script
+## UWI-Sentry YOLOv5 Modified script
 
 Install Instructions:
 
 
-#### NEW_Instructions
+### NEW_Instructions
 (worked on JetPack version 4.6)
 
 1. Set the power mode to MAX. 
@@ -30,7 +30,7 @@ https://github.com/ultralytics/yolov5/releases/tag/v5.0
 
 
 
-#### OLD_Instructions
+### OLD_Instructions
 
 The first install of YOLOv5 gave me trouble. The following procedure worked:
 1. I set the power mode to MAX. 
@@ -52,12 +52,18 @@ i. pip3 install -r requirements.txt
 11. Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
 12. Run Yolov5 to test if it works by following the instructions on the GitHub page.
 
-### General Workflow:
-the detect.py script is the script that runs YOLOv5.
-The state machine in the main_control package will launch and kill the detect.py script using the ROS launch api. For YOLOv5 to launch successfully there must be at least one video source. 
+## General Workflow:
+The detect.py script is the script that runs YOLOv5.
+The state machine in the main_control package will launch and kill the detect.py script using the ROS launch api. 
+
+For YOLOv5 to launch successfully there must be at least one video source. 
+
 Using the api, the main_control state machine launches a launch file(launch_detector.launch), that runs a bash script(run_script.sh) that determines the amount of video devices connected. Both of these scripts are stored in the human_detection package's launch folder.
+
 The locations of the found video devices are stored in a text file(streams.txt).
+
 When detect.py is launched, it is told to read this text file and use the sources written there.
+
 A future upgrade can be to combine the functions into the detect.py itself or find a way to determine the sorces inside of detect.py.
 
 
