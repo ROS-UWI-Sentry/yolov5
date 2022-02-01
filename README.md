@@ -6,27 +6,27 @@ Install Instructions:
 NEW_Instructions
 (worked on JetPack version 4.6)
 
-Set the power mode to MAX. 
-Ensure that pip is up to date for Python3 on the AGX.
-python3 -m pip install --upgrade pip
-Follow the instructions in the following link to Install pytorch version v1.7.0, download the wheel from https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048
-Install all the requirements.
-Follow the instructions for torchvision v0.8.1, check below steps in the event an error occurs.
-If there is no error with pip3 install, skip this step, else if there is an error; may need to run: export OPENBLAS_CORETYPE=ARMV8 https://forums.developer.nvidia.com/t/error-when-install-pytorch-in-xavier/172901/4?u=iandanielsooknanan 
-If there is an error then try: sudo chown -R uwi-sentry-agx /home/uwi-sentry-agx https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048/667?u=iandanielsooknanan
+1. Set the power mode to MAX. 
+2. Ensure that pip is up to date for Python3 on the AGX.
+i. python3 -m pip install --upgrade pip
+3. Follow the instructions in the following link to Install pytorch version v1.7.0, download the wheel from https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048
+4. Install all the requirements.
+5. Follow the instructions for torchvision v0.8.1, check below steps in the event an error occurs.
+6. If there is no error with pip3 install, skip this step, else if there is an error; may need to run: export OPENBLAS_CORETYPE=ARMV8 https://forums.developer.nvidia.com/t/error-when-install-pytorch-in-xavier/172901/4?u=iandanielsooknanan 
+7. If there is an error then try: sudo chown -R uwi-sentry-agx /home/uwi-sentry-agx https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048/667?u=iandanielsooknanan
 Where uwi-sentry-agx is the username of the system
-Install these dependencies:
-python3 -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
-Install seaborn
-python3 -m pip install seaborn
-Clone YOLOv5
+8. Install these dependencies:
+i. python3 -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+9. Install seaborn
+i. python3 -m pip install seaborn
+10. Clone YOLOv5
 git clone https://github.com/ultralytics/yolov5.git 
-Go into YOLOv5 directory and install requirements:
-pip3 install -r requirements.txt
- Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
-Since this YOLOv5 version is older, it will try to auto-download newer models, therefore you must download yolov5l6.pt from version 5 under the assets dropdown: 
+11. Go into YOLOv5 directory and install requirements:
+i. pip3 install -r requirements.txt
+12. Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
+13. Since this YOLOv5 version is older, it will try to auto-download newer models, therefore you must download yolov5l6.pt from version 5 under the assets dropdown: 
 https://github.com/ultralytics/yolov5/releases/tag/v5.0 
-Run yolov5 with rosbridge open and a webcam attached
+14. Run yolov5 with rosbridge open and a webcam attached
 
 
 Watch out for old models versions: download from version 5 assets yolov5l6.pt
@@ -38,24 +38,24 @@ Combine the detect.py and get_devices.py code since it is already done.
 OLD_Instructions
 
 The first install of YOLOv5 gave me trouble. The following procedure worked:
-I set the power mode to MAX. 
-Ensure that pip is up to date for Python3 on the AGX.
-python3 -m pip install --upgrade pip
-Install pytorch using the instructions given on the following link: https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048 
-Install torchvision from the same link.
-Install pillow if errors were given
+1. I set the power mode to MAX. 
+2. Ensure that pip is up to date for Python3 on the AGX.
+i. python3 -m pip install --upgrade pip
+3. Install pytorch using the instructions given on the following link: https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048 
+4. Install torchvision from the same link.
+5. Install pillow if errors were given
+6. 
 
-
-Install these dependencies:
-python3 -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
-Install seaborn
-python3 -m pip install seaborn
-Clone YOLOv5
-git clone https://github.com/ultralytics/yolov5.git 
-Go into YOLOv5 directory and install requirements:
-pip3 install -r requirements.txt
- Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
- Run Yolov5 to test if it works by following the instructions on the GitHub page.
+7. Install these dependencies:
+i. python3 -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+8. Install seaborn
+i. python3 -m pip install seaborn
+9. Clone YOLOv5
+i. git clone https://github.com/ultralytics/yolov5.git 
+10. Go into YOLOv5 directory and install requirements:
+i. pip3 install -r requirements.txt
+11. Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
+12. Run Yolov5 to test if it works by following the instructions on the GitHub page.
 
 ### General Workflow:
 the detect.py script is the script that runs YOLOv5.
