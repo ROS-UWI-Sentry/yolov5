@@ -1,3 +1,71 @@
+### UWI-Sentry YOLOv5 Modified script
+
+Install Instructions:
+
+
+NEW_Instructions
+(worked on JetPack version 4.6)
+
+Set the power mode to MAX. 
+Ensure that pip is up to date for Python3 on the AGX.
+python3 -m pip install --upgrade pip
+Follow the instructions in the following link to Install pytorch version v1.7.0, download the wheel from https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048
+Install all the requirements.
+Follow the instructions for torchvision v0.8.1, check below steps in the event an error occurs.
+If there is no error with pip3 install, skip this step, else if there is an error; may need to run: export OPENBLAS_CORETYPE=ARMV8 https://forums.developer.nvidia.com/t/error-when-install-pytorch-in-xavier/172901/4?u=iandanielsooknanan 
+If there is an error then try: sudo chown -R uwi-sentry-agx /home/uwi-sentry-agx https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048/667?u=iandanielsooknanan
+Where uwi-sentry-agx is the username of the system
+Install these dependencies:
+python3 -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+Install seaborn
+python3 -m pip install seaborn
+Clone YOLOv5
+git clone https://github.com/ultralytics/yolov5.git 
+Go into YOLOv5 directory and install requirements:
+pip3 install -r requirements.txt
+ Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
+Since this YOLOv5 version is older, it will try to auto-download newer models, therefore you must download yolov5l6.pt from version 5 under the assets dropdown: 
+https://github.com/ultralytics/yolov5/releases/tag/v5.0 
+Run yolov5 with rosbridge open and a webcam attached
+
+
+Watch out for old models versions: download from version 5 assets yolov5l6.pt
+Document the additional files needed for webcam and change the readme of sentry yolvo5 
+?
+Document how the detector works with the files needed to determine how many webcams are installed.
+Combine the detect.py and get_devices.py code since it is already done.
+
+OLD_Instructions
+
+The first install of YOLOv5 gave me trouble. The following procedure worked:
+I set the power mode to MAX. 
+Ensure that pip is up to date for Python3 on the AGX.
+python3 -m pip install --upgrade pip
+Install pytorch using the instructions given on the following link: https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048 
+Install torchvision from the same link.
+Install pillow if errors were given
+
+
+Install these dependencies:
+python3 -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+Install seaborn
+python3 -m pip install seaborn
+Clone YOLOv5
+git clone https://github.com/ultralytics/yolov5.git 
+Go into YOLOv5 directory and install requirements:
+pip3 install -r requirements.txt
+ Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
+ Run Yolov5 to test if it works by following the instructions on the GitHub page.
+
+### General Workflow:
+the detect.py script is the script that runs YOLOv5.
+The state machine in the main_control package will launch and kill the detect.py script using the ROS launch api. For YOLOv5 to launch successfully there must be at least one video source. 
+Using the api, the main_control state machine launches a launch file(launch_detector.launch), that runs a bash script(run_script.sh) that determines the amount of video devices connected. Both of these scripts are stored in the human_detection package's launch folder.
+The locations of the found video devices are stored in a text file(streams.txt).
+When detect.py is launched, it is told to read this text file and use the sources written there.
+A future upgrade can be to combine the functions into the detect.py itself or find a way to determine the sorces inside of detect.py.
+
+
 <a align="left" href="https://apps.apple.com/app/id1452689527" target="_blank">
 <img width="800" src="https://user-images.githubusercontent.com/26833433/98699617-a1595a00-2377-11eb-8145-fc674eb9b1a7.jpg"></a>
 &nbsp
