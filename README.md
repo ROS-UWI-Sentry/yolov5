@@ -3,7 +3,7 @@
 Install Instructions:
 
 
-NEW_Instructions
+#### NEW_Instructions
 (worked on JetPack version 4.6)
 
 1. Set the power mode to MAX. 
@@ -24,18 +24,13 @@ git clone https://github.com/ultralytics/yolov5.git
 11. Go into YOLOv5 directory and install requirements:
 i. pip3 install -r requirements.txt
 12. Change python version check from 3.7 to 3.6.9 in utils/general.py line 111
-13. Since this YOLOv5 version is older, it will try to auto-download newer models, therefore you must download yolov5l6.pt from version 5 under the assets dropdown: 
+13. Since this YOLOv5 version is older, it will try to auto-download newer models, resulting in an error(https://github.com/ultralytics/yolov5/issues/5175#issuecomment-976563721), therefore you must download yolov5l6.pt from version 5 under the assets dropdown: 
 https://github.com/ultralytics/yolov5/releases/tag/v5.0 
 14. Run yolov5 with rosbridge open and a webcam attached
 
 
-Watch out for old models versions: download from version 5 assets yolov5l6.pt
-Document the additional files needed for webcam and change the readme of sentry yolvo5 
-?
-Document how the detector works with the files needed to determine how many webcams are installed.
-Combine the detect.py and get_devices.py code since it is already done.
 
-OLD_Instructions
+#### OLD_Instructions
 
 The first install of YOLOv5 gave me trouble. The following procedure worked:
 1. I set the power mode to MAX. 
