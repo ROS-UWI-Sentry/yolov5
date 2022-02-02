@@ -12,7 +12,13 @@ i. python3 -m pip install --upgrade pip
 3. Follow the instructions in the following link to Install pytorch version v1.7.0, download the wheel from https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048
 4. Install all the requirements.
 5. Follow the instructions for torchvision v0.8.1, check below steps in the event an error occurs.
-6. If there is no error with pip3 install, skip this step, else if there is an error; may need to run: export OPENBLAS_CORETYPE=ARMV8 https://forums.developer.nvidia.com/t/error-when-install-pytorch-in-xavier/172901/4?u=iandanielsooknanan 
+6. If there is no error with pip3 install, skip this step, else if there is an error; may need to 
+downgrade the numpy install:
+pip3 install numpy==1.19.4
+OR run: 
+export OPENBLAS_CORETYPE=ARMV8 
+https://forums.developer.nvidia.com/t/error-when-install-pytorch-in-xavier/172901/4?u=iandanielsooknanan 
+HOWEVER, this command will need to be run every time, so an alternative is to downgrade the numpy version.
 7. If there is an error then try: sudo chown -R uwi-sentry-agx /home/uwi-sentry-agx https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-10-now-available/72048/667?u=iandanielsooknanan
 Where uwi-sentry-agx is the username of the system
 8. Install these dependencies:
