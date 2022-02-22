@@ -64,13 +64,21 @@ The state machine in the main_control package will launch and kill the detect.py
 
 For YOLOv5 to launch successfully there must be at least one video source. 
 
-Using the api, the main_control state machine launches a launch file(launch_detector.launch), that runs a bash script(run_script.sh) that determines the amount of video devices connected. Both of these scripts are stored in the human_detection package's launch folder.
+Using the ROS launch api, the main_control state machine launches a launch file(launch_detector.launch), that runs a bash script(run_script.sh). This bash script determines the amount of video devices connected and runs yolov5. Both of these scripts are stored in the human_detection package's launch folder. In a similar manner there is a launch file for killing the detector.
 
+
+run_script.sh runs a python script, stored in the yolov5 folder, to clean up the data returned by the system(data on the amount of devices stored) and produces a neat output of locations of the video devices for yolov5 to read. 
 The locations of the found video devices are stored in a text file(streams.txt).
 
-When detect.py is launched, it is told to read this text file and use the sources written there.
+
+run_script.sh is where the user must specify the amount of frames to debounce for. In this script webcamDebounceFrames specifies the amount of frames needed to have a human present in it sequentially before the detector publishes that a human is present. This helps for removing fase positives.  
+
+
+
+When detect.py is launched, it is told to read this text file and use the sources written there. 
 
 A future upgrade can be to combine the functions into the detect.py itself or find a way to determine the sorces inside of detect.py.
+Handle the lack of video sorces programmatically and non distructive.
 
 
 <a align="left" href="https://apps.apple.com/app/id1452689527" target="_blank">
